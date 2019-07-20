@@ -7,7 +7,7 @@ const globby = require('globby');
 const pkgUp = require('pkg-up');
 const moveFile = require('./moveFile.js');
 
-const run = async ({from, to, move}) => {
+const run = async ({from, to, move, yes}) => {
   try {
     const find = new RegExp(from);
 
@@ -45,8 +45,8 @@ const run = async ({from, to, move}) => {
       ),
     );
 
-    const {doRun} = await inquirer.prompt([
-      {name: 'doRun', type: 'confirm', message: 'Continue?'},
+    const {doRun = yes} = await inquirer.prompt([
+      {name: 'doRun', type: 'confirm', message: 'Continue?', when: !yes},
     ]);
 
     if (!doRun) return;
@@ -65,23 +65,42 @@ const run = async ({from, to, move}) => {
 const {argv} = require('yargs')
   .command(
     '$0 <from> <to>',
-    'Move JS file and update all imports to/from that file(s)',
+    'Moves JS file(s) and updates all imports to/from that file(s)',
     yargs =>
       yargs
         .positional('from', {
-          describe: 'file path or regex (with capture groups)',
+          describe: 'source file path or regex (supports capture groups)',
           type: 'string',
         })
         .positional('to', {
-          describe: 'file path (use $1, $2 etc. to reference captured groups)',
+          describe:
+            'target file path (use $1, $2 etc. to reference captured groups)',
           type: 'string',
+        })
+        .option('yes', {
+          describe: `Don't ask for confirmation before updating files (Always say yes)`,
+          type: 'boolean',
+          default: false,
         })
         .option('move', {
           describe:
             'Move the file (use --no-move if you have already moved the file)',
           type: 'boolean',
           default: true,
-        }),
+        })
+        .example('$0 A.js B.js', 'Rename file A.js to B.js')
+        .example(
+          '$0 src/{A,B}.js',
+          'Rename src/A.js to src/B.js using bash brace expansion',
+        )
+        .example(
+          `$0 '(.*).test.js' '$1.spec.js'`,
+          'Rename all *.test.js files to *.spec.js',
+        )
+        .example(
+          `$0 '(reducers|actions)/([^/]*).js' '$2/$1.js'`,
+          'Group redux files by domain instead of by type',
+        ),
   )
   .help();
 
