@@ -25,5 +25,7 @@
     "refactoring-codemods": "^0.3.4",
     "yargs": "^13.2.4"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  }
 }
