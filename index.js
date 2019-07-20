@@ -27,15 +27,32 @@ const run = async ({from, to, move, yes}) => {
       process.exit(1);
     }
 
+    let fromTo;
     if (!to) {
-      console.log(chalk.underline(`Found ${files.length} files:`));
-      console.table(files.map(file => ({file})));
-    }
+      const maxLength = files.reduce(
+        (maxLength, file) => Math.max(maxLength, file.length),
+        0,
+      );
+      const editText = files
+        .map(file => `${file}${' '.repeat(maxLength - file.length)} -> ${file}`)
+        .join('\n');
 
-    const fromTo = files.map(file => ({
-      from: file,
-      to: file.replace(find, to),
-    }));
+      const {fromEditor} = await inquirer.prompt([
+        {
+          name: 'fromEditor',
+          message: `Second argument (to) wasn't specified. Use editor instead?`,
+          type: 'editor',
+          default: editText,
+        },
+      ]);
+
+      fromTo = fromEditor
+        .split('\n')
+        .map(line => line.split('->').map(s => s.trim()))
+        .filter(([from, to]) => from && from !== to);
+    } else {
+      fromTo = files.map(file => [file, file.replace(find, to)]);
+    }
 
     console.log(chalk.yellow('This will rename the following files:'));
     console.table(fromTo);
@@ -50,7 +67,7 @@ const run = async ({from, to, move, yes}) => {
     ]);
 
     if (!doRun) return;
-    fromTo.forEach(({from, to}, index) => {
+    fromTo.forEach(([from, to], index) => {
       console.log(
         chalk.bgCyan.black(`Processing ${index + 1}/${fromTo.length}`),
       );
@@ -64,7 +81,7 @@ const run = async ({from, to, move, yes}) => {
 
 const {argv} = require('yargs')
   .command(
-    '$0 <from> <to>',
+    '$0 <from> [to]',
     'Moves JS file(s) and updates all imports to/from that file(s)',
     yargs =>
       yargs
