@@ -1,6 +1,6 @@
 {
   "name": "@niklasgrahl/js-mv",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Move and update all relative imports to/from .js file(s)",
   "license": "MIT",
   "repository": "niklasgrahl/js-mv",
