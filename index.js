@@ -7,9 +7,9 @@ const globby = require('globby')
 const pkgUp = require('pkg-up')
 const moveFile = require('./moveFile.js')
 
-const run = async ({ from, to, move, yes }) => {
+const run = async ({ from, to, move, regex, yes }) => {
   try {
-    const find = new RegExp(from)
+    const find = regex ? new RegExp(from) : from
 
     const pkg = await pkgUp()
     const pkgRoot = path.dirname(pkg)
@@ -21,12 +21,16 @@ const run = async ({ from, to, move, yes }) => {
 
     const files = move
       ? allJsFiles
-          .filter(file => !!file.match(find))
+          .filter(file => (regex ? !!file.match(find) : find === file))
           .map(file => file.replace('./', ''))
       : [from]
 
     if (!files.length) {
-      console.log(chalk.red(`Found no matching files matching ${from}`))
+      console.log(
+        chalk.red(
+          `Found no matching files matching ${from}. Did you forget --regex?`
+        )
+      )
       process.exit(1)
     }
 
@@ -55,6 +59,11 @@ const run = async ({ from, to, move, yes }) => {
         .filter(([from, to]) => from && from !== to)
     } else {
       fromTo = files.map(file => [file, file.replace(find, to)])
+    }
+
+    if (!fromTo.length) {
+      console.log(chalk.red(`Found no files to update`))
+      process.exit(1)
     }
 
     console.log(chalk.yellow('This will rename the following files:'))
@@ -89,13 +98,19 @@ const { argv } = require('yargs')
     yargs =>
       yargs
         .positional('from', {
-          describe: 'source file path or regex (supports capture groups)',
+          describe:
+            'source file path (regex if --regex flag is used; supports capture groups)',
           type: 'string',
         })
         .positional('to', {
           describe:
             'target file path (use $1, $2 etc. to reference captured groups). If not specified, opens your default editor',
           type: 'string',
+        })
+        .option('regex', {
+          describe: 'Treat <from> as a regex. Uses `new RegExp(from)`',
+          type: 'boolean',
+          default: false,
         })
         .option('yes', {
           describe: `Don't ask for confirmation before updating files (Always say yes)`,
@@ -114,17 +129,18 @@ const { argv } = require('yargs')
           'Rename src/A.js to src/B.js using bash brace expansion'
         )
         .example(
-          `$0 '(.*).test.js' '$1.spec.js'`,
+          `$0 --regex '(.*)\.test\.js' '$1.spec.js'`,
           'Rename all *.test.js files to *.spec.js'
         )
         .example(
-          `$0 'src/(.*).js'`,
+          `$0 --regex 'src/(.*)\.js'`,
           'Rename all *.js files in the src directory using your default editor'
         )
         .example(
-          `$0 '(reducers|actions)/([^/]*).js' '$2/$1.js'`,
+          `$0 '(reducers|actions)/([^/]*)\.js' '$2/$1.js'`,
           'Group redux files by feature instead of by type'
         )
+        .strict(true)
   )
   .help()
 
