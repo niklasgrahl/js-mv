@@ -1,0 +1,29 @@
+{
+  "name": "@niklasgrahl/js-mv",
+  "version": "0.0.0",
+  "description": "Move and update all relative imports to/from .js file(s)",
+  "license": "MIT",
+  "repository": "niklasgrahl/js-mv",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "js-mv": "index.js"
+  },
+  "author": {
+    "name": "Niklas Grahl",
+    "email": "niklas.grahl@gmail.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "globby": "^10.0.1",
+    "inquirer": "^6.5.0",
+    "jscodeshift": "^0.6.4",
+    "pkg-up": "^3.1.0",
+    "refactoring-codemods": "^0.3.4",
+    "yargs": "^13.2.4"
+  },
+  "devDependencies": {}
+}
