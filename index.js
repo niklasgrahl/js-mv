@@ -21,7 +21,11 @@ const run = async ({ from, to, move, regex, yes }) => {
 
     const files = move
       ? allJsFiles
-          .filter(file => (regex ? !!file.match(find) : find === file))
+          .filter(file =>
+            regex
+              ? !!file.match(find)
+              : path.resolve(find) === path.resolve(pkgRoot, file)
+          )
           .map(file => file.replace('./', ''))
       : [from]
 
