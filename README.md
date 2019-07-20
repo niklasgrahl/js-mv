@@ -24,13 +24,13 @@ js-mv src/{A,B}.js
 
 // Rename all .test.js files to .spec.js
 // <from> get's passed into `new Regexp(from)` and you can reference the capture groups in [to] with $1, $2 etc.
-js-mv '(.*).test.js' '$1.spec.js'
+js-mv --regex '(.*).test.js' '$1.spec.js'
 
 // Not specifying a second argument opens your default editor (try it out, it's pretty neat!)
-js-mv 'src/(.*).js'
+js-mv --regex 'src/(.*).js'
 
 // Group redux files by feature instead of by type
-js-mv '(reducers|actions)/([^/]\*).js' '$2/$1.js'
+js-mv --regex '(reducers|actions)/([^/]\*).js' '$2/$1.js'
 ```
 
 After running the command, all relative imports in your project should have been updated

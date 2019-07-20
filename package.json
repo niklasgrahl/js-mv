@@ -15,7 +15,6 @@
     "name": "Niklas Grahl",
     "email": "niklas.grahl@gmail.com"
   },
-  "license": "MIT",
   "dependencies": {
     "chalk": "^2.4.2",
     "globby": "^10.0.1",
