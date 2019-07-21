@@ -133,15 +133,15 @@ const { argv } = require('yargs')
           'Rename src/A.js to src/B.js using bash brace expansion'
         )
         .example(
-          `$0 --regex '(.*)\.test\.js' '$1.spec.js'`,
+          `$0 --regex '(.*)\\.test\\.js' '$1.spec.js'`,
           'Rename all *.test.js files to *.spec.js'
         )
         .example(
-          `$0 --regex 'src/(.*)\.js'`,
+          `$0 --regex 'src/(.*)\\.js'`,
           'Rename all *.js files in the src directory using your default editor'
         )
         .example(
-          `$0 '(reducers|actions)/([^/]*)\.js' '$2/$1.js'`,
+          `$0 '(reducers|actions)/([^/]*)\\.js' '$2/$1.js'`,
           'Group redux files by feature instead of by type'
         )
         .strict(true)
