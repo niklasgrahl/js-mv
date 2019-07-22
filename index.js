@@ -68,6 +68,8 @@ const run = async ({ from, to, git, move, regex, yes }) => {
     const pkg = await pkgUp()
     const pkgRoot = path.dirname(pkg)
 
+    if (git) move = false
+
     const renames = await getRenames({ pkgRoot, from, to, git, move, regex })
 
     if (!renames.length) {
